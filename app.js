@@ -1,9 +1,9 @@
 /**
  * Created by n0v0leg on 19.04.14.
  */
-var n = 3;
+console.time('time');
+var n = 4;
 var properties = {
-    none: 0,
     reflexivity: 1,
     antisymmetry: 2,
     transitivity: 4
@@ -14,7 +14,10 @@ for (flags = 0; flags < 8; flags++) {
     results[flags] = [];
 }
 var permutations = [];
-var p = [0,1,2,3];
+var p = [];
+for (i = 0; i < n; i++) {
+    p[i] = i;
+}
 permute(p, 0);
 permutations.shift();
 var b = [];
@@ -29,7 +32,7 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
             b[i][j] = !!(shift & 1);
             shift >>>= 1;
         }
-    flags = properties.none;
+    flags = 0;
     reflexivity: {
         for (i = 0; i < n; i++)
             if (!b[i][i])
@@ -81,6 +84,26 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
         }
     }
 }
+var fs = require('fs');
+var filename = 'results' + n + '.txt';
+for (flags = 0; flags < 8; flags++){
+    for (var prop in properties){
+        if (!(flags & properties[prop])){
+            fs.appendFileSync(filename, 'no ');
+        }
+        fs.appendFileSync(filename, prop + '\n');
+    }
+    for (i = 0; i < results[flags].length; i++) {
+        for (j = 0; j < results[flags][i].length - 1; j++) {
+            for (k = 0; k < n; k++) {
+                fs.appendFileSync(filename, results[flags][i][j][k] + 1);
+            }
+            fs.appendFileSync(filename, '\n');
+        }
+        fs.appendFileSync(filename, '(' + results[flags][i][j] + ')\n\n');
+    }
+}
+console.timeEnd('time');
 
 /**
  * generation of all possible permutations
@@ -88,17 +111,20 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
  * @param {number} k
  */
 function permute(p, k) {
-    k++;
     var i;
-    if (k == n) {
-        permutations.push(p);
+    if (k + 1 == n) {
+        var newP = [];
+        for (i = 0; i < n; i++) {
+            newP[i] = p[i];
+        }
+        permutations.push(newP);
     } else {
         for (i = k; i < n; i++) {
             var temp;
             temp = p[k];
             p[k] = p[i];
             p[i] = temp;
-            permute(p, k);
+            permute(p, k + 1);
             temp = p[k];
             p[k] = p[i];
             p[i] = temp;
