@@ -121,11 +121,7 @@ console.timeEnd('time');
 function permute(p, k) {
     var i;
     if (k + 1 == n) {
-        var newP = [];
-        for (i = 0; i < n; i++) {
-            newP[i] = p[i];
-        }
-        permutations.push(newP);
+        permutations.push(p.slice());
     } else {
         for (i = k; i < n; i++) {
             var temp;
