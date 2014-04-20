@@ -19,7 +19,7 @@ for (i = 0; i < n; i++) {
     p[i] = i;
 }
 permute(p, 0);
-permutations.shift();
+//permutations.shift();
 var b = [];
 for (i = 0; i < n; i++) {
     b[i] = [];
@@ -84,6 +84,8 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
         }
     }
 }
+
+var sum = 0;
 var fs = require('fs');
 var filename = 'results' + n + '.txt';
 for (flags = 0; flags < 8; flags++){
@@ -101,7 +103,13 @@ for (flags = 0; flags < 8; flags++){
             fs.appendFileSync(filename, '\n');
         }
         fs.appendFileSync(filename, '(' + results[flags][i][j] + ')\n\n');
+        sum += results[flags][i][j];
     }
+}
+if (sum == Math.pow(2, n * n)){
+    console.log('computing finished');
+} else {
+    console.error('computing finished with errors');
 }
 console.timeEnd('time');
 
