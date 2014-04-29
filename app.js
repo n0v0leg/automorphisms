@@ -39,41 +39,41 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
                 break reflexivity;
         flags |= properties.reflexivity;
     }
-    antisymmetry: {
+    antisymmetry_checking: {
         for (i = 1; i < n; i++)
             for (j = 0; j < i; j++)
                 if (b[i][j] && b[j][i])
-                    break antisymmetry;
+                    break antisymmetry_checking;
         flags |= properties.antisymmetry;
     }
-    transitivity: {
+    transitivity_checking: {
         for (i = 0; i < n; i++)
             for (j = 0; j < n; j++)
                 if (!b[i][j])
                     for (k = 0; k < n; k++)
                         if (b[i][k] && b[k][j])
-                            break transitivity;
+                            break transitivity_checking;
         flags |= properties.transitivity;
     }
     var subgroup = [];
     for (k = 0; k < permutations.length; k++) {
-        automorphism: {
+        automorphism_checking: {
             for (i = 0; i < n; i++)
                 for (j = 0; j < n; j++)
                     if (b[i][j] != b[permutations[k][i]][permutations[k][j]])
-                        break automorphism;
+                        break automorphism_checking;
             subgroup.push(permutations[k]);
         }
     }
     if (subgroup.length != 0) {
         searching: {
             for (i = 0; i < results[flags].length; i++) {
-                equality: {
+                equality_checking: {
                     if (results[flags][i].length == subgroup.length + 1) {
                         for (j = 0; j < subgroup.length; j++)
                             for (k = 0; k < n; k++)
                                 if (results[flags][i][j][k] != subgroup[j][k])
-                                    break equality;
+                                    break equality_checking;
                         results[flags][i][subgroup.length]++;
                         break searching;
                     }
@@ -85,7 +85,6 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
     }
 }
 
-var sum = 0;
 var fs = require('fs');
 var filename = 'results' + n + '.txt';
 for (flags = 0; flags < 8; flags++){
@@ -103,14 +102,9 @@ for (flags = 0; flags < 8; flags++){
             fs.appendFileSync(filename, '\n');
         }
         fs.appendFileSync(filename, '(' + results[flags][i][j] + ')\n\n');
-        sum += results[flags][i][j];
     }
 }
-if (sum == Math.pow(2, n * n)){
-    console.log('computing finished');
-} else {
-    console.error('computing finished with errors');
-}
+console.log('computing finished');
 console.timeEnd('time');
 
 /**
