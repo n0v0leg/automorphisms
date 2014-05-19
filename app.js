@@ -58,10 +58,11 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
     }
     group = [1]; //first element will be a counter of equal groups
     for (k = 0; k < permutations.length; k++) {
+        permutation = permutations[k];
         automorphism_checking: {
             for (i = 0; i < n; i++)
                 for (j = 0; j < n; j++)
-                    if (b[i][j] != b[permutations[k][i]][permutations[k][j]])
+                    if (b[i][j] != b[permutation[i]][permutation[j]])
                         break automorphism_checking;
             group.push(k);
         }
@@ -74,7 +75,7 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
                     for (j = 1; j < group.length; j++) //start from 1 to skip counter
                         if (groups[i][j] != group[j])
                             break equality_checking;
-                    groups[i][0]++;
+                    groups[i][0]++; //inc counter
                     break searching;
                 }
             }
@@ -101,7 +102,7 @@ for (flags = 0; flags < 8; flags++){
             }
             fs.appendFileSync(filename, '\n');
         }
-        fs.appendFileSync(filename, '(' + groups[i][0] + ')\n\n');
+        fs.appendFileSync(filename, '(' + groups[i][0] + ')\n\n'); //counter
     }
 }
 console.log('computing finished');
