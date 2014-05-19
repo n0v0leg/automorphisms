@@ -9,6 +9,7 @@ var properties = {
     transitivity: 4
     };
 var i, j, k, flags;
+var permutation, group, groups;
 var results = [];
 for (flags = 0; flags < 8; flags++) {
     results[flags] = [];
@@ -55,55 +56,52 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
                             break transitivity_checking;
         flags |= properties.transitivity;
     }
-    var group = [];
+    group = [1]; //first element will be a counter of equal groups
     for (k = 0; k < permutations.length; k++) {
-        var permutation = permutations[k];
         automorphism_checking: {
             for (i = 0; i < n; i++)
                 for (j = 0; j < n; j++)
-                    if (b[i][j] != b[permutation[i]][permutation[j]])
+                    if (b[i][j] != b[permutations[k][i]][permutations[k][j]])
                         break automorphism_checking;
-            group.push(permutation);
+            group.push(k);
         }
     }
-    if (group.length != 0) {
-        searching: {
-            var groups = results[flags];
-            for (i = 0; i < groups.length; i++) {
-                equality_checking: {
-                    if (groups[i].length == group.length + 1) {
-                        for (j = 0; j < group.length; j++)
-                            for (k = 0; k < n; k++)
-                                if (groups[i][j][k] != group[j][k])
-                                    break equality_checking;
-                        groups[i][group.length]++;
-                        break searching;
-                    }
+    searching: {
+        groups = results[flags];
+        for (i = 0; i < groups.length; i++) {
+            equality_checking: {
+                if (groups[i].length == group.length) {
+                    for (j = 1; j < group.length; j++) //start from 1 to skip counter
+                        if (groups[i][j] != group[j])
+                            break equality_checking;
+                    groups[i][0]++;
+                    break searching;
                 }
             }
-            group.push(1);
-            results[flags].push(group);
         }
+        groups.push(group);
     }
 }
 
 var fs = require('fs');
 var filename = 'results' + n + '.txt';
 for (flags = 0; flags < 8; flags++){
+    groups = results[flags];
     for (var prop in properties){
         if (!(flags & properties[prop])){
             fs.appendFileSync(filename, 'no ');
         }
         fs.appendFileSync(filename, prop + '\n');
     }
-    for (i = 0; i < results[flags].length; i++) {
-        for (j = 0; j < results[flags][i].length - 1; j++) {
+    for (i = 0; i < groups.length; i++) {
+        for (j = 1; j < groups[i].length; j++) {
+            permutation = permutations[groups[i][j]];
             for (k = 0; k < n; k++) {
-                fs.appendFileSync(filename, results[flags][i][j][k] + 1);
+                fs.appendFileSync(filename, permutation[k] + 1);
             }
             fs.appendFileSync(filename, '\n');
         }
-        fs.appendFileSync(filename, '(' + results[flags][i][j] + ')\n\n');
+        fs.appendFileSync(filename, '(' + groups[i][0] + ')\n\n');
     }
 }
 console.log('computing finished');
