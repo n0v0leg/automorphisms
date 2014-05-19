@@ -33,10 +33,10 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
             shift >>>= 1;
         }
     flags = 0;
-    reflexivity: {
+    reflexivity_checking: {
         for (i = 0; i < n; i++)
             if (!b[i][i])
-                break reflexivity;
+                break reflexivity_checking;
         flags |= properties.reflexivity;
     }
     antisymmetry_checking: {
@@ -55,32 +55,34 @@ for (var value = 0; value < Math.pow(2, n * n); value++) {
                             break transitivity_checking;
         flags |= properties.transitivity;
     }
-    var subgroup = [];
+    var group = [];
     for (k = 0; k < permutations.length; k++) {
+        var permutation = permutations[k];
         automorphism_checking: {
             for (i = 0; i < n; i++)
                 for (j = 0; j < n; j++)
-                    if (b[i][j] != b[permutations[k][i]][permutations[k][j]])
+                    if (b[i][j] != b[permutation[i]][permutation[j]])
                         break automorphism_checking;
-            subgroup.push(permutations[k]);
+            group.push(permutation);
         }
     }
-    if (subgroup.length != 0) {
+    if (group.length != 0) {
         searching: {
-            for (i = 0; i < results[flags].length; i++) {
+            var groups = results[flags];
+            for (i = 0; i < groups.length; i++) {
                 equality_checking: {
-                    if (results[flags][i].length == subgroup.length + 1) {
-                        for (j = 0; j < subgroup.length; j++)
+                    if (groups[i].length == group.length + 1) {
+                        for (j = 0; j < group.length; j++)
                             for (k = 0; k < n; k++)
-                                if (results[flags][i][j][k] != subgroup[j][k])
+                                if (groups[i][j][k] != group[j][k])
                                     break equality_checking;
-                        results[flags][i][subgroup.length]++;
+                        groups[i][group.length]++;
                         break searching;
                     }
                 }
             }
-            subgroup.push(1);
-            results[flags].push(subgroup);
+            group.push(1);
+            results[flags].push(group);
         }
     }
 }
